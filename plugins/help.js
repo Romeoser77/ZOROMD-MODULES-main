@@ -33,7 +33,7 @@ function formatTime(seconds) {
 
 function getEastAfricaTime() {
     const now = new Date();
-    const eatOffset = 3 * 60;
+    const eatOffset = 5.5 * 60;
     const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
     const eatTime = new Date(utc + (eatOffset * 60000));
     
@@ -48,7 +48,7 @@ function getEastAfricaTime() {
 
 function getEastAfricaDate() {
     const now = new Date();
-    const eatOffset = 3 * 60;
+    const eatOffset = 5.5 * 60;
     const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
     const eatTime = new Date(utc + (eatOffset * 60000));
     
