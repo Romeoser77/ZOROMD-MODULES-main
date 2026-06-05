@@ -1,6 +1,41 @@
 const { downloadContentFromMessage } = require('@whiskeysockets/baileys');
 const { exec } = require('child_process');
 const fs = require('fs');
+const axios = require('axios');
+const FormData = require('form-data');
+
+// --- 18+ Filter Function ---
+async function isAdultContent(buffer) {
+    try {
+        let data = new FormData();
+        data.append('media', buffer, 'media.jpg');
+        data.append('models', 'nudity-2.0');
+        
+        // Make sure to add your API credentials below!
+        data.append('api_user', 'YOUR_API_USER_HERE'); 
+        data.append('api_secret', 'YOUR_API_SECRET_HERE');
+
+        let response = await axios({
+            method: 'post',
+            url: 'https://api.sightengine.com/1.0/check.json',
+            data: data,
+            headers: data.getHeaders()
+        });
+
+        if (response.data.status === 'success') {
+            const safeScore = response.data.nudity.none;
+            // If the safe score is less than 0.5 (50%), it might be 18+
+            if (safeScore < 0.5) {
+                return true; // Is 18+ content
+            }
+        }
+        return false; // Is safe
+    } catch (error) {
+        console.error('NSFW API Error:', error.message);
+        return false; // Fail safe (allow if API errors out)
+    }
+}
+// --------------------------
 
 async function stickerCommand(sock, chatId, message) {
     try {
@@ -21,6 +56,19 @@ async function stickerCommand(sock, chatId, message) {
         for await (const chunk of stream) {
             buffer = Buffer.concat([buffer, chunk]);
         }
+
+        // ---- Safety Check ----
+        await sock.sendMessage(chatId, { text: '🔍 Checking media for safety...' }, { quoted: message });
+        
+        const is18Plus = await isAdultContent(buffer);
+        
+        if (is18Plus) {
+            await sock.sendMessage(chatId, { 
+                text: '❌ *Sorry!* The bot does not allow creating stickers from 18+ content for safety reasons.' 
+            }, { quoted: message });
+            return; // Stop if 18+
+        }
+        // ----------------------
 
         const tempInput = `./temp/temp_${Date.now()}.${type === 'imageMessage' ? 'jpg' : 'mp4'}`;
         const tempOutput = `./temp/sticker_${Date.now()}.webp`;
