@@ -22,7 +22,7 @@ function formatTime(seconds) {
 
 function getEastAfricaTime() {
     const now = new Date();
-    const eatOffset = 3 * 60;
+    const eatOffset = 5.5 * 60;
     const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
     const eatTime = new Date(utc + (eatOffset * 60000));
     
@@ -46,11 +46,16 @@ function getBotMode() {
 
 async function aliveCommand(sock, chatId, message) {
     try {
+        // Calculate speed (ping) live
         const start = Date.now();
         const tempMsg = await sock.sendMessage(chatId, { text: '⚡ Checking...' }, { quoted: message });
         const end = Date.now();
         const ping = Math.round((end - start) / 2);
         
+        // Delete the temporary 'Checking...' message
+        await sock.sendMessage(chatId, { delete: tempMsg.key });
+        
+        // Fetch system information
         const uptimeInSeconds = process.uptime();
         const uptimeFormatted = formatTime(uptimeInSeconds);
         const currentTime = getEastAfricaTime();
@@ -59,6 +64,7 @@ async function aliveCommand(sock, chatId, message) {
         const freeMem = (os.freemem() / (1024 * 1024 * 1024)).toFixed(2);
         const usedMem = (totalMem - freeMem).toFixed(2);
 
+        // Your styled Alive message
         const aliveMessage = `
 ╭━━━━━━━━━━━━━━━━━━━━━╮
 ┃  ✨𝗭𝗢𝗥𝗢 𝐌𝐃 ✨
@@ -86,8 +92,13 @@ async function aliveCommand(sock, chatId, message) {
   
   © 𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗯𝘆 𝗥𝗢𝗠𝗘𝗢`;
 
+        // Image URL
+        const imageUrl = "https://i.postimg.cc/N00hGknB/ZOROMD.jpg"; 
+
+        // Send image with the information as a caption
         await sock.sendMessage(chatId, {
-            text: aliveMessage.trim(),
+            image: { url: imageUrl },
+            caption: aliveMessage.trim()
         }, { quoted: message });
 
     } catch (error) {
