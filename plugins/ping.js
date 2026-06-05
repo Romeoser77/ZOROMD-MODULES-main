@@ -1,4 +1,5 @@
 const os = require('os');
+const fs = require('fs');
 const settings = require('../settings.js');
 
 function formatTime(seconds) {
@@ -19,23 +20,27 @@ function formatTime(seconds) {
 }
 
 function getSpeedEmoji(ping) {
-    if (ping < 100) return '🟢';
-    if (ping < 300) return '🟡';
-    return '🔴';
+    if (ping < 100) return '🚀';
+    if (ping < 300) return '⚡';
+    return '🛰️';
 }
 
 function getSpeedStatus(ping) {
-    if (ping < 100) return '𝗙𝗮𝘀𝘁';
-    if (ping < 300) return '𝗠𝗲𝗱𝗶𝘂𝗺';
-    return '𝗦𝗹𝗼𝘄';
+    if (ping < 100) return '𝗛𝗬𝗣𝗘𝗥 𝗦𝗣𝗘𝗘𝗗';
+    if (ping < 300) return '𝗢𝗣𝗧𝗜𝗠𝗔𝗟';
+    return '𝗗𝗘𝗟𝗔𝗬𝗘𝗗';
 }
 
 async function pingCommand(sock, chatId, message) {
     try {
         const start = Date.now();
-        await sock.sendMessage(chatId, { text: '🏓 𝗣𝗶𝗻𝗴𝗶𝗻𝗴...' }, { quoted: message });
+        // Simple but powerful entry
+        const tempMsg = await sock.sendMessage(chatId, { text: '⚡ *[ ZORO MD ]* _Analyzing server latency..._' }, { quoted: message });
         const end = Date.now();
         const ping = Math.round((end - start) / 2);
+
+        // Delete the initial checking message
+        await sock.sendMessage(chatId, { delete: tempMsg.key });
 
         const uptimeInSeconds = process.uptime();
         const uptimeFormatted = formatTime(uptimeInSeconds);
@@ -48,24 +53,51 @@ async function pingCommand(sock, chatId, message) {
         const usedMem = (totalMem - freeMem).toFixed(2);
         const memPercent = ((usedMem / totalMem) * 100).toFixed(1);
 
+        // Truly original premium design
         const botInfo = `
-╭─────────────────────╮
-│  🚀 𝐏𝐎𝐍𝐆! 𝐒𝐏𝐄𝐄𝐃 𝐓𝐄𝐒𝐓
-├─────────────────────┤
-│ ${speedEmoji} 𝗦𝗽𝗲𝗲𝗱: ${ping}𝗺𝘀 (${speedStatus})
-│ ⏱️ 𝗨𝗽𝘁𝗶𝗺𝗲: ${uptimeFormatted}
-│ 📦 𝗩𝗲𝗿𝘀𝗶𝗼𝗻: 𝘃${settings.version}
-├─────────────────────┤
-│  💻 𝐒𝐘𝐒𝐓𝐄𝐌 𝐒𝐓𝐀𝐓𝐒
-├─────────────────────┤
-│ 🖥️ 𝗖𝗣𝗨: ${cpuUsage}%
-│ 💾 𝗥𝗔𝗠: ${usedMem}/${totalMem}𝗚𝗕
-│ 📊 𝗠𝗲𝗺𝗼𝗿𝘆: ${memPercent}%
-╰─────────────────────╯
+✨ *❖━━━━━━[ 𝗭𝗢𝗥𝗢 𝗠𝗗 𝗣𝗜𝗡𝗚 ]━━━━━━❖* ✨
 
-  🤖𝗭𝗢𝗥𝗢 𝗠𝗗`;
+*“ Speed defines power, performance defines class. ”*
 
-        await sock.sendMessage(chatId, { text: botInfo.trim() }, { quoted: message });
+*┌────────────────────────┐*
+*│ 📊 PERFORMANCE STATS*
+*│*
+*│* 🚀 *𝗣𝗶𝗻𝗴:* \`${ping} 𝗺𝘀\`
+*│* ⚡ *𝗥𝗮𝗻𝗸:* \`${speedStatus}\`
+*│* ⏳ *𝗨𝗽𝘁𝗶𝗺𝗲:* \`${uptimeFormatted}\`
+*└────────────────────────┘*
+
+*┌────────────────────────┐*
+*│ 🧠 SYSTEM ARCHITECTURE*
+*│*
+*│* 🖥️ *𝗖𝗣𝗨 𝗟𝗼𝗮𝗱:* \`${cpuUsage}%\`
+*│* 💾 *𝗥𝗔𝗠 𝗨𝘀𝗲𝗱:* \`${usedMem} 𝗚𝗕\`
+*│* 📊 *𝗠𝗲𝗺𝗼𝗿𝘆:* \`${memPercent}%\`
+*│* 📦 *𝗩𝗲𝗿𝘀𝗶𝗼𝗻:* \`v${settings.version}\`
+*└────────────────────────┘*
+
+*🔥 Engine status: Running flawlessly.*
+*━━━━━━━━━━━━━━━━━━━━━━━━━━━*
+> *© 𝗢𝘄𝗻𝗲𝗱 & 𝗗𝗲𝘃𝗲𝗹𝗼𝗽𝗲𝗱 𝗯𝘆 𝗥𝗢𝗠𝗘𝗢 ⚡*`;
+
+        const imageUrl = "https://i.postimg.cc/N00hGknB/ZOROMD.jpg"; 
+        const bgmPath = './media/zoro_bgm.mp3'; 
+
+        // 1. Send the image with the premium caption
+        await sock.sendMessage(chatId, { 
+            image: { url: imageUrl }, 
+            caption: botInfo.trim() 
+        }, { quoted: message });
+
+        // 2. Play the background BGM (voice note)
+        if (fs.existsSync(bgmPath)) {
+            const audioBuffer = fs.readFileSync(bgmPath);
+            await sock.sendMessage(chatId, {
+                audio: audioBuffer,
+                mimetype: 'audio/mp4',
+                ptt: true 
+            }, { quoted: message });
+        }
 
     } catch (error) {
         console.error('Error in ping command:', error);
