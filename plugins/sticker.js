@@ -17,8 +17,8 @@ async function isAdultContent(buffer) {
         data.append('models', 'nudity-2.0');
         
         // Enter your API keys below!
-        data.append('api_user', 'YOUR_API_USER_HERE'); 
-        data.append('api_secret', 'YOUR_API_SECRET_HERE');
+        data.append('api_user', '6605193'); 
+        data.append('api_secret', '36aVQRhqWikHjcVTQgXGgaxuYiehn6Ui');
 
         let response = await axios({
             method: 'post',
