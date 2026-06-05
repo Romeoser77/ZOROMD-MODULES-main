@@ -93,7 +93,7 @@ async function aliveCommand(sock, chatId, message) {
   © 𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗯𝘆 𝗥𝗢𝗠𝗘𝗢`;
 
         // Image URL
-        const imageUrl = "https://i.postimg.cc/N00hGknB/ZOROMD.jpg"; 
+        const imageUrl = "https://i.postimg.cc/TY3zG950/zoro-md.jpg"; 
 
         // Send image with the information as a caption
         await sock.sendMessage(chatId, {
