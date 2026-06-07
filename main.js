@@ -151,6 +151,7 @@ const bratCommand = require('./plugins/brat-local');
 const createGroupCommand = require('./plugins/creategr');
 const obfuscateCommand = require('./plugins/obfuscate');
 const textstickerCommand = require('./plugins/textsticker');
+const picCommand = require('./plugins/pic');
 
 // NEW: Audio effects commands
 const {
@@ -498,6 +499,12 @@ async function handleMessages(sock, messageUpdate, printLog) {
                 await stickerCommand(sock, chatId, message);
                 commandExecuted = true;
                 break;
+                case userMessage === '.pic':
+    // message.message.extendedTextMessage.contextInfo.quotedMessage എന്നത് സ്റ്റിക്കർ മെസ്സേജ് ആണ്
+    const quoted = message.message.extendedTextMessage?.contextInfo?.quotedMessage;
+    await picCommand(sock, chatId, message, quoted);
+    commandExecuted = true;
+    break;
             case userMessage.startsWith('.warnings'):
                 const mentionedJidListWarnings = message.message.extendedTextMessage?.contextInfo?.mentionedJid || [];
                 await warningsCommand(sock, chatId, mentionedJidListWarnings, senderId);
