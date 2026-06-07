@@ -1121,14 +1121,20 @@ async function handleMessages(sock, messageUpdate, printLog) {
                 await facebookCommand(sock, chatId, message);
                 break;
             case userMessage.startsWith('.music'):
-                await playCommand(sock, chatId, message);
-                break;
-            case userMessage.startsWith('.spotify'):
-                await spotifyCommand(sock, chatId, message);
-                break;
-            case userMessage.startsWith('.play') || userMessage.startsWith('.mp3') || userMessage.startsWith('.ytmp3') || userMessage.startsWith('.song'):
-                await songCommand(sock, chatId, message);
-                break;
+    await playCommand(sock, chatId, message);
+    break;
+
+case userMessage.startsWith('.spotify'):
+    await spotifyCommand(sock, chatId, message);
+    break;
+
+// 🔥 ഈ കമാൻഡുകൾ ഏത് അടിച്ചാലും പാട്ട് ഡൗൺലോഡ് കമാൻഡ് വർക്ക് ചെയ്യും (Flat Fall-through method)
+case userMessage.startsWith('.play'):
+case userMessage.startsWith('.mp3'):
+case userMessage.startsWith('.ytmp3'):
+case userMessage.startsWith('.song'):
+    await songCommand(sock, chatId, message);
+    break;
             case userMessage.startsWith('.video') || userMessage.startsWith('.ytmp4'):
                 await videoCommand(sock, chatId, message);
                 break;
