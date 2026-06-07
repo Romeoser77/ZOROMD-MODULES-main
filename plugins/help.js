@@ -226,6 +226,7 @@ async function helpCommand(sock, chatId, message) {
 ‎╭▣ 🎨 ${transformText('MEDIA TOOLS')} ▣
 ‎│➽ .${transformText('blur')}
 ‎│➽ .${transformText('simage')}
+‎│➽ .${transformText('pic')}
 ‎│➽ .${transformText('sticker')}
 ‎│➽ .${transformText('removebg')}
 ‎│➽ .${transformText('remini')}
